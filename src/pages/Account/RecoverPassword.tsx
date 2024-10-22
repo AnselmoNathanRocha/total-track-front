@@ -6,7 +6,6 @@ import { FormRoot } from "../../components/Forms/FormRoot";
 import { ButtonSave } from "./styles";
 import { InputPass } from "../../components/Forms/InputPass";
 import { toastService } from "@/services/toast-service";
-import { userService } from "@/services/user";
 import { GetUser } from "@/models/user";
 import { ContainerInput } from "@/styles/globalStyle";
 
@@ -43,7 +42,7 @@ export function RecoverPassword({ user, ...props }: Props) {
 
       console.log(dataTransformed);
       
-      await userService.update(dataTransformed);
+      // await userService.update(dataTransformed);
 
       form.reset();
       props.onClose();
