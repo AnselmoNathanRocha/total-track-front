@@ -2,30 +2,28 @@ import { useEffect, useState } from "react";
 import { Container } from "../../styles/globalStyle";
 import { RecoverPassword } from "./RecoverPassword";
 import { userService } from "../../services/user";
-import { useAuth } from "@/context";
 import { GetUser } from "@/models/user";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useForceRefresh } from "@/hooks/use-force-refresh";
-import { AccountForm } from "./AccountForm";
+import { AccountData, AccountForm } from "./AccountForm";
 import { ContainerSpinner } from "@/components/Loader/styles";
 import { Loading } from "@/components/Loading";
+import { toastService } from "@/services/toast-service";
 
 export function Account() {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(false);
   const [user, setUser] = useState<GetUser>();
-  const { idUser } = useAuth();
   const forceRefresh = useForceRefresh();
 
   const fetchUser = async () => {
     try {
-      if (idUser) {
-        const response = await userService.get(idUser);
+      const userResponse = await userService.getMe();
 
-        setUser(response);
-      }
+      setUser(userResponse);
     } catch (error) {
       console.error(error);
+      toastService.error("Erro ao buscar dados do usuário.");
     } finally {
       setLoading(false);
     }
@@ -35,7 +33,27 @@ export function Account() {
 
   useEffect(() => {
     debouncedFetchUser();
-  }, [forceRefresh, idUser]);
+  }, [forceRefresh]);
+
+  const handleSubmit = async (data: AccountData) => {
+    try {
+      if (user) {
+        const dataTransform = {
+          name: data.name,
+          surname: data.surname,
+          dateOfBirth: data.dateOfBirth,
+          email: user.email,
+          password: "12345678",
+          photo: data.photoo
+        }
+
+        await userService.update(dataTransform);
+      }
+      forceRefresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   function renderContent() {
     if (!user) return null;
@@ -45,6 +63,7 @@ export function Account() {
         <AccountForm
           defaultValues={user}
           clickOpenModal={() => setModal(true)}
+          onSubmit={handleSubmit}
         />
 
         <RecoverPassword
@@ -64,7 +83,7 @@ export function Account() {
     <Container>
       {loading ? (
         <ContainerSpinner>
-          <Loading/>
+          <Loading />
         </ContainerSpinner>
       ) : (
         renderContent()

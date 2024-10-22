@@ -1,4 +1,4 @@
-export interface GetRequest {
+export interface GetSharedWith {
   id: number;
   idUserRequest: number;
   idUserResponse: number;
@@ -7,7 +7,12 @@ export interface GetRequest {
   createdAt: string;
 }
 
-export interface PostRequest {
+export interface PostSharedWith {
   idUserResponse: number;
   nameUserResponse: string;
+}
+
+export interface GetAllSharedWithParams {
+  userRequestId?: number;
+  userResponseId?: number;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormRoot } from "@/components/Forms/FormRoot";
-import { Container } from "../../styles/globalStyle";
+import { Container, ContainerForm, ContainerRequests } from "@/styles/globalStyle";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,11 +8,12 @@ import { AddItemInput } from "@/components/AddItemInput";
 import { theme } from "@/styles/theme";
 import { toastService } from "@/services/toast-service";
 import { userService } from "@/services/user";
-import { ContainerForm, ContainerRequests } from "./styles";
+import { CircleStatus, ContainerItem, DateContainer, DateText, TextContainer, TextItem } from "./styles";
 import { Title } from "@/styles/globalStyle";
 import { pendingRequestService } from "@/services/pendingRequest";
 import { GetRequest, PostRequest } from "@/models/pendingRequest";
-import { useAuth } from "@/context";
+import { useForceRefresh } from "@/hooks/use-force-refresh";
+import { formatDate } from "@/utils";
 
 const isEmail = (value: string) => /[a-zA-Z]/.test(value);
 const phoneRegex = /^[0-9]{10,11}$/;
@@ -35,9 +36,10 @@ const sendRequestSchema = z.object({
 export type SendRequestData = z.infer<typeof sendRequestSchema>;
 
 export function SendRequest() {
+  const forceRefresh = useForceRefresh();
   const [loading, setLoading] = useState(false);
   const [pendingRequest, setPendingRequest] = useState<GetRequest[]>();
-  const { idUser } = useAuth();
+  // const [requestHistories, setRequestHistories] = useState<GetRequest[]>();
   const form = useForm<SendRequestData>({
     resolver: zodResolver(sendRequestSchema),
   });
@@ -45,44 +47,41 @@ export function SendRequest() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const response = await pendingRequestService.get(1);
+        const responseRequests = await pendingRequestService.get();
+        // const responseHistories = await requestHistoriesService.get();
 
-        setPendingRequest(response);
-        console.log(response);
+        setPendingRequest(responseRequests);
+        // setRequestHistories(responseHistories);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetch();
-  }, []);
+  }, [forceRefresh]);
 
   const handleSubmit = async (data: SendRequestData) => {
     try {
       setLoading(true);
 
-      if (idUser) {
-        const responseUser = await userService.getByEmailOrPhone(data.user);
+      const responseUser = await userService.getByEmail(data.user);
 
-        const dataRequest: PostRequest = {
-          id: responseUser.id,
-          name: responseUser.name,
-          phone: responseUser.phone,
-          email: responseUser.email,
-        };
+      const dataRequest: PostRequest = {
+        idUserResponse: responseUser.id,
+        nameUserResponse: responseUser.name
+      };
 
-        await pendingRequestService.create(idUser, dataRequest);
-        toastService.success("Pedido feito com sucesso!");
-        form.reset();
-      }
+      await pendingRequestService.create(dataRequest);
+      toastService.success("Pedido feito com sucesso!");
+      form.reset();
+      forceRefresh();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
-
-      if (error.response && error.response.data) {
+      if (error.response.status === 400) {
         toastService.error(error.response.data);
       } else {
-        toastService.error("Pedido não enviado.");
+        toastService.error(error.response.data.error);
       }
     } finally {
       setLoading(false);
@@ -94,7 +93,7 @@ export function SendRequest() {
       <ContainerForm>
         <Title>Adicionar amigo</Title>
 
-        <FormRoot form={form} onSubmit={form.handleSubmit(handleSubmit)}>
+        <FormRoot form={form} onSubmit={form.handleSubmit(handleSubmit, (error) => console.log(error))}>
           <AddItemInput
             name="user"
             label="Usuário"
@@ -105,9 +104,34 @@ export function SendRequest() {
           />
         </FormRoot>
 
-        <ContainerRequests $title="Pedidos">
-          {pendingRequest ? "" : "vazio"}
+        <ContainerRequests $title="Pedidos pendentes">
+          {pendingRequest && pendingRequest.map((request) => (
+            <ContainerItem key={request.id}>
+              <CircleStatus />
+              <TextContainer>
+                <TextItem>{request.nameUserResponse}</TextItem>
+              </TextContainer>
+              <DateContainer>
+                <DateText>{formatDate(request.createdAt)}</DateText>
+              </DateContainer>
+            </ContainerItem>
+          ))}
         </ContainerRequests>
+
+        {/* <ContainerRequests $title="Histórico de pedidos">
+          {requestHistories && requestHistories.map((history) => (
+            <ContainerItem key={history.id}>
+              <CircleStatus />
+              <TextContainer>
+                <TextItem>{history.name}</TextItem>
+                <TextItem $size="12px">{history.email}</TextItem>
+              </TextContainer>
+              <DateContainer>
+                <DateText>{formatDate(history.createdAt)}</DateText>
+              </DateContainer>
+            </ContainerItem>
+          ))}
+        </ContainerRequests> */}
       </ContainerForm>
     </Container>
   );

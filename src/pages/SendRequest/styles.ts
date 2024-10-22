@@ -1,31 +1,55 @@
 import styled from "styled-components";
 
-export const ContainerForm = styled.div`
+export const ContainerItem = styled.div`
   width: 100%;
-  margin-top: 80px;
-  padding: 0 20%;
+  height: 50px;
+  padding: 0 15px;
+  background-color: ${({ theme }) => theme.colors.navy};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.charcoal};
+
+  &:first-child {
+    border-radius: 5px 5px 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0 0 5px 5px;
+    border-bottom: none;
+  }
+`;
+
+export const CircleStatus = styled.div`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ffc107;
+`;
+
+export const TextContainer = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  gap: 30px;
+  align-items: flex-start;
 `;
 
-export const ContainerRequests = styled.div<{ $title?: string }>`
-  width: clamp(250px, 100%, 600px);
-  min-height: 100px;
-  border-radius: 4px;
-  border: 1px solid ${({ theme }) => theme.colors.lavender};
-  margin-top: 20px;
-  position: relative;
+export const TextItem = styled.p<{$size?: string}>`
+  font-size: ${(props) => props.$size ? props.$size : "16px"};
+  font-weight: ${(props) => props.$size ? 400 : 600};
+  color: ${({ theme }) => theme.colors.lavender};
+`;
 
-  &::after {
-    content: '${(props) => props.$title}';
-    position: absolute;
-    top: -18px;
-    left: 5px;
-    font-size: 14px;
-    font-weight: 500;
-    color: ${({theme}) => theme.colors.lavender};
-  }
+export const DateContainer = styled.div`
+  max-width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const DateText = styled.span`
+  font-size: 10px;
+  color: ${({ theme }) => theme.colors.mediumSlate};
 `;

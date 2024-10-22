@@ -42,7 +42,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const expiresAt = dayjs().add(1, "month").toISOString();
 
-    localStorage.setItem("ID", `${data.userId}`);
     localStorage.setItem("authToken", data.token);
     localStorage.setItem("expiresAt", expiresAt);
     window.location.reload();

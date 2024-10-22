@@ -1,5 +1,6 @@
 export interface GetItem {
   id: number;
+  idUser: number;
   itemName: string;
   checked: boolean;
 }

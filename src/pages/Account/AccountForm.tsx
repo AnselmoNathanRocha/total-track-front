@@ -7,12 +7,10 @@ import { ButtonLink, ButtonSave, InputContainer, PencilIcon } from "./styles";
 import { InputFile } from "@/components/Forms/InputFile";
 import { Input } from "@/components/Forms/Input";
 import { toastService } from "@/services/toast-service";
-import { userService } from "@/services/user";
 import dayjs from "dayjs";
 import { GetUser } from "@/models/user";
 import { z } from "zod";
 import { FiEdit3 } from "react-icons/fi";
-import { useAuth } from "@/context";
 import { getImageUrl } from "@/utils";
 import { ContainerInput } from "@/styles/globalStyle";
 
@@ -23,15 +21,15 @@ const accountSchema = z.object({
   dateOfBirth: zodDateSchema("YYYY-MM-DD"),
 });
 
-type AccountData = z.infer<typeof accountSchema>;
+export type AccountData = z.infer<typeof accountSchema>;
 
 interface Props {
   clickOpenModal: () => void;
   defaultValues: GetUser;
+  onSubmit: (data: AccountData) => void;
 }
 
-export function AccountForm({ clickOpenModal, defaultValues }: Props) {
-  const { idUser } = useAuth();
+export function AccountForm({ clickOpenModal, defaultValues, onSubmit }: Props) {
   const [editFields, setEditFields] = useState({
     photoo: false,
     name: false,
@@ -53,16 +51,7 @@ export function AccountForm({ clickOpenModal, defaultValues }: Props) {
 
   const handleSubmit = async (data: AccountData) => {
     try {
-      const formData = new FormData();
-
-      if (data.photoo) {
-        formData.append("photoo", data.photoo);
-      }
-      formData.append("name", data.name);
-      formData.append("surname", data.surname);
-      formData.append("dateOfBirth", data.dateOfBirth.toString().split("T")[0]);
-
-      await userService.update(idUser!, formData);
+      onSubmit(data);
 
       setEditFields({
         photoo: false,
@@ -70,7 +59,6 @@ export function AccountForm({ clickOpenModal, defaultValues }: Props) {
         surname: false,
         dateOfBirth: false,
       });
-
       toastService.success("Salvo com sucesso!");
     } catch (error) {
       console.error(error);

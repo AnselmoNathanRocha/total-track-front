@@ -12,12 +12,11 @@ import { List } from "../../components/List";
 import { AreaProfile } from "../../components/AreaProfile";
 import { useNavigate } from "react-router-dom";
 import { itemService } from "../../services/item";
-import { GetItem } from "../../models/item";
 import { toastService } from "../../services/toast-service";
 import { GetUser } from "../../models/user";
-import { useAuth } from "@/context";
 import { getImageUrl } from "@/utils";
 import { userService } from "@/services/user";
+import { GetItem } from "@/models/item";
 
 const itemSchema = z.object({
   itemName: z.string().min(1, "Digite um item"),
@@ -31,24 +30,24 @@ export function Home() {
   const form = useForm<ItemData>({
     resolver: zodResolver(itemSchema),
   });
-  const { idUser } = useAuth();
 
   const [loading, setLoading] = useState({
     page: true,
     button: false,
   });
   const [user, setUser] = useState<GetUser>();
+  const [items, setItems] = useState<GetItem[]>();
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
         setLoading((prev) => ({ ...prev, page: true }));
 
-        if (idUser) {
-          const userResponse = await userService.get(idUser);
+        const userResponse = await userService.getMe();
+        const itemsResponse = await itemService.get();
 
-          setUser(userResponse);
-        }
+        setUser(userResponse);
+        setItems(itemsResponse);
       } catch (error) {
         console.error(error);
         toastService.error("Erro ao buscar lista");
@@ -58,13 +57,13 @@ export function Home() {
     };
 
     fetchItems();
-  }, [forceRefresh, idUser]);
+  }, [forceRefresh]);
 
   const handleAdd = async (data: ItemData) => {
     try {
       setLoading((prev) => ({ ...prev, button: true }));
 
-      await itemService.create(idUser!, data);
+      await itemService.create(data);
 
       form.reset();
       forceRefresh();
@@ -76,12 +75,9 @@ export function Home() {
     }
   };
 
-  const handleToggle = async (id: number, data: GetItem) => {
+  const handleToggle = async (id: number) => {
     try {
-      await itemService.update(idUser!, id, {
-        ...data,
-        checked: !data.checked,
-      });
+      await itemService.update(id);
       forceRefresh();
     } catch (error) {
       console.error(error);
@@ -91,7 +87,7 @@ export function Home() {
 
   const handleDelete = async (id: number) => {
     try {
-      await itemService.delete(idUser!, id);
+      await itemService.delete(id);
       forceRefresh();
     } catch (error) {
       console.error(error);
@@ -124,9 +120,9 @@ export function Home() {
         </ContainerInput>
       </FormRoot>
 
-      {user && user.shoppingList.length !== 0 ? (
+      {items && items.length !== 0 ? (
         <List
-          data={user.shoppingList}
+          data={items}
           onToggle={handleToggle}
           onDelete={handleDelete}
         />

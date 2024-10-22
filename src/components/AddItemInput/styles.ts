@@ -25,6 +25,10 @@ export const Input = styled.input`
   padding: 0 15px;
   font-size: 1rem;
   border-radius: 6px 0 0 6px;
+
+  &::placeholder {
+    color: ${({theme}) => theme.colors.mediumSlate};
+  }
 `;
 
 export const ButtonAdd = styled.button<{ $buttonColor?: string }>`
