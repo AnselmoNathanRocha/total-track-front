@@ -1,4 +1,4 @@
-import { Item } from "../../models/item";
+
 import { FaRegCheckCircle, FaRegCircle } from "react-icons/fa";
 import {
   ItemName,
@@ -8,10 +8,11 @@ import {
   ButtonDell,
   IconCheck,
 } from "./styles";
+import { GetItem } from "@/models/item";
 
 interface Props {
-  data: Item[];
-  onToggle: (id: number, data: Item) => void;
+  data: GetItem[];
+  onToggle: (id: number, data: GetItem) => void;
   onDelete: (id: number) => void;
 }
 

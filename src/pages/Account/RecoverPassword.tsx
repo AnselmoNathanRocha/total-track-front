@@ -43,7 +43,7 @@ export function RecoverPassword({ user, ...props }: Props) {
 
       console.log(dataTransformed);
       
-      await userService.update(user.id, dataTransformed);
+      await userService.update(dataTransformed);
 
       form.reset();
       props.onClose();

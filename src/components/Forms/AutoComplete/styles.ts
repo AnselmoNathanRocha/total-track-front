@@ -39,7 +39,7 @@ export const AutoCompleteContainer = styled.div`
     bottom: auto;
   }
   &[data-disabled="true"] ${AreaInput} {
-    background-color: ${({ theme }) => theme.colors.grayLight};
+    background-color: ${({ theme }) => theme.colors.lightGray};
   }
 `;
 
@@ -102,8 +102,8 @@ export const EmptyButton = styled.button`
   height: 50px;
   padding: 5px;
   border-radius: 3px;
-  background-color: ${(props) => props.theme.colors.blueDark};
-  color: ${(props) => props.theme.colors.grayMedium};
+  background-color: ${(props) => props.theme.colors.charcoal};
+  color: ${(props) => props.theme.colors.lightGray};
 `;
 
 export const InputCheck = styled.input`
@@ -112,7 +112,7 @@ export const InputCheck = styled.input`
 
 export const Icon = styled.svg`
   font-size: 1rem;
-  color: ${(props) => props.theme.colors.grayDark};
+  color: ${(props) => props.theme.colors.navy};
 `;
 
 export const Content = styled.div`
