@@ -18,6 +18,7 @@ import { userService } from "../../services/user";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "../../components/Loader";
 import { useAuth } from "../../context";
+import { toastService } from "@/services/toast-service";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -59,18 +60,21 @@ export function Login() {
         login(response);
         navigate("/");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
         setError({
           emailError: error.response.data,
           passwordError: undefined,
         });
-      } else {
+      } else if (error.response && error.response.status === 401) {
         setError({
           emailError: undefined,
           passwordError: error.response.data,
         });
+      } else {
+        console.error(error);
+        toastService.error("Erro ao se comunicar como servidor.");
       }
     } finally {
       setLoading(false);

@@ -6,6 +6,7 @@ export const Card = styled.div`
   padding: 8px 15px;
   border-radius: 5px;
   background: ${({ theme }) => theme.colors.navy};
+  border-bottom: 1px solid ${({theme}) => theme.colors.charcoal};
 
   display: flex;
   justify-content: space-between;

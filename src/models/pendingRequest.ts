@@ -11,3 +11,8 @@ export interface PostRequest {
   idUserResponse: number;
   nameUserResponse: string;
 }
+
+export interface Params {
+  userRequestId?: number;
+  userResponseId?: number;
+}

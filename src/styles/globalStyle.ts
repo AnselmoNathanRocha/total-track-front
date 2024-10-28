@@ -57,6 +57,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: auto;
 `;
 
 export const ContainerInput = styled.div`
@@ -90,6 +91,7 @@ export const ContainerRequests = styled.div<{ $title?: string }>`
   border: 1px solid ${({ theme }) => theme.colors.lavender};
   margin-top: 20px;
   position: relative;
+  margin-bottom: 10px;
 
   &::after {
     content: "${(props) => props.$title}";

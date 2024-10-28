@@ -41,7 +41,26 @@ export const Button = styled.button`
   }
 `;
 
+export const AreaNotification = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 export const IconBtn = styled.svg`
   font-size: 20px;
   color: ${({ theme }) => theme.colors.lavender};
+`;
+
+export const NotificationBalloon = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background-color: ${({ theme }) => theme.colors.crimson};
+  color: ${({theme}) => theme.colors.white};
+  font-size: 14px;
+  font-weight: 500;
 `;

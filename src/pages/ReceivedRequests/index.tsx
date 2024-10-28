@@ -17,7 +17,8 @@ export function ReceivedRequests() {
     const fetch = async () => {
       setLoading(true);
       try {
-        const responseRequests = await pendingResponseService.get();
+        const responseRequests = await pendingResponseService.getResponses("PENDING");
+        
         setPendingResponse(responseRequests);
       } catch (error) {
         console.error(error);
@@ -75,7 +76,7 @@ export function ReceivedRequests() {
             {pendingResponse.map((response) => (
               <Card key={response.id}>
                 <CardHeader>
-                  <CardTitle>{response.nameUserResponse}</CardTitle>
+                  <CardTitle>{response.nameUserRequest}</CardTitle>
                 </CardHeader>
                 <CardBody>
                   <ButtonContainer>

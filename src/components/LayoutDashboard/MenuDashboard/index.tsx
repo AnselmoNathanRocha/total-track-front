@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context";
-import { Button, Container, IconBtn } from "./styles";
+import { AreaNotification, Button, Container, IconBtn, NotificationBalloon } from "./styles";
 import {
   FaEnvelope,
   FaHome,
@@ -12,9 +12,10 @@ import {
 interface Props {
   isOpen: boolean;
   clickButton: () => void;
+  notification?: number;
 }
 
-export function MenuDashboard({ isOpen, clickButton }: Props) {
+export function MenuDashboard({ isOpen, clickButton, notification }: Props) {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,7 +54,11 @@ export function MenuDashboard({ isOpen, clickButton }: Props) {
         data-is-active={isReceivedRequests}
       >
         <IconBtn as={FaEnvelope} />
-        Convites
+        <AreaNotification>
+          Convites
+
+          {notification !== 0 && <NotificationBalloon>{notification}</NotificationBalloon>}
+        </AreaNotification>
       </Button>
       <Button
         onClick={() => {
