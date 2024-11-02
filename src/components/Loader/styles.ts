@@ -11,7 +11,7 @@ export const Spinner = styled.div<LoaderProps>`
   width: ${(props) => `${props.size || 20}px`};
   height: ${(props) => `${props.size || 20}px`};
   border-radius: 50%;
-  border: 3px solid transparent;
+  border: 4px solid transparent;
   border-top-color: ${(props) => props.color || "#fff"};
   border-left-color: ${(props) => props.color || "#fff"};
   animation: ${spin} 0.6s linear infinite;

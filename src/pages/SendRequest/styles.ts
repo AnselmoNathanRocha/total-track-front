@@ -2,21 +2,21 @@ import styled from "styled-components";
 
 export const ContainerItem = styled.div`
   width: 100%;
-  height: 50px;
-  padding: 0 15px;
+  height: 60px;
+  padding: 10px 15px;
   background-color: ${({ theme }) => theme.colors.navy};
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 15px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.charcoal};
-
+  
   &:first-child {
-    border-radius: 5px 5px 0 0;
+    border-radius: 8px 8px 0 0;
   }
-
+  
   &:last-child {
-    border-radius: 0 0 5px 5px;
+    border-radius: 0 0 8px 8px;
     border-bottom: none;
   }
 `;
@@ -28,28 +28,35 @@ export const CircleStatus = styled.div`
   background-color: #ffc107;
 `;
 
+export const StatusIcon = styled.div<{ status: string }>`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: ${({ status }) =>
+    status === "ACCEPTED" ? "#4CAF50" : "#F44336"};
+`;
+
 export const TextContainer = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
 `;
 
-export const TextItem = styled.p<{$size?: string}>`
-  font-size: ${(props) => props.$size ? props.$size : "16px"};
-  font-weight: ${(props) => props.$size ? 400 : 600};
-  color: ${({ theme }) => theme.colors.lavender};
+export const TextItem = styled.p<{ $size?: string; color?: string }>`
+  font-size: ${(props) => (props.$size ? props.$size : "16px")};
+  font-weight: 600;
+  color: ${(props) => (props.color ? props.color : props.theme.colors.lavender)};
 `;
 
 export const DateContainer = styled.div`
-  max-width: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: ${({ theme }) => theme.colors.mediumSlate};
 `;
 
 export const DateText = styled.span`
-  font-size: 10px;
-  color: ${({ theme }) => theme.colors.mediumSlate};
+  font-size: 12px;
+  color: inherit;
 `;

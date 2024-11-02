@@ -5,6 +5,7 @@ export interface GetRequest {
   nameUserRequest: string;
   nameUserResponse: string;
   createdAt: string;
+  status: string;
 }
 
 export interface PostRequest {

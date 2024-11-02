@@ -3,12 +3,12 @@ import { httpClient } from "./http-client";
 
 class PendingRequestService {
   async get(): Promise<GetRequest[]> {
-    const response = await httpClient.get(`/requests`);
+    const response = await httpClient.get(`/pending-requests`);
     return response.data;
   }
 
   async create(data: PostRequest) {
-    await httpClient.post(`/requests`, data);
+    await httpClient.post(`/pending-requests`, data);
   }
 }
 

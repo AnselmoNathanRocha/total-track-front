@@ -11,8 +11,3 @@ export interface PostSharedWith {
   idUserResponse: number;
   nameUserResponse: string;
 }
-
-export interface GetAllSharedWithParams {
-  userRequestId?: number;
-  userResponseId?: number;
-}

@@ -13,7 +13,7 @@ export function LayoutDashboard() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const response = await pendingResponseService.getResponses("PENDING");
+        const response = await pendingResponseService.get();
 
         serResponses(response);
       } catch (error) {

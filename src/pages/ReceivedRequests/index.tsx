@@ -7,6 +7,9 @@ import { Card, ButtonContainer, CardHeader, CardBody, ActionButton, CardTitle } 
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { toastService } from "@/services/toast-service";
 import { sharedWithService } from "@/services/sharedWithService";
+import { Loader } from "@/components/Loader";
+import { theme } from "@/styles/theme";
+import { ContainerSpinner } from "@/components/Loader/styles";
 
 export function ReceivedRequests() {
   const forceRefresh = useForceRefresh();
@@ -17,8 +20,8 @@ export function ReceivedRequests() {
     const fetch = async () => {
       setLoading(true);
       try {
-        const responseRequests = await pendingResponseService.getResponses("PENDING");
-        
+        const responseRequests = await pendingResponseService.get();
+
         setPendingResponse(responseRequests);
       } catch (error) {
         console.error(error);
@@ -33,18 +36,18 @@ export function ReceivedRequests() {
   const handleAccept = async (response: GetRequest) => {
     try {
       const data = {
-        idUserResponse: response.idUserRequest, 
+        idUserResponse: response.idUserRequest,
         nameUserResponse: response.nameUserRequest
       }
-      await pendingResponseService.update(response.id, 'ACCEPTED');
+      await pendingResponseService.update(response.id, 'APPROVED');
       await sharedWithService.create(data);
 
       toastService.success("Pedido aceito com sucesso!");
       forceRefresh();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
-      if(error.response.status === 409) {
+      if (error.response.status === 409) {
         toastService.error(error.response.data);
       } else {
         toastService.error("Erro ao aceitar pedido.");
@@ -69,29 +72,32 @@ export function ReceivedRequests() {
       <ContainerForm>
         <Title>Pedidos</Title>
 
-        {loading ? (
-          <p>Carregando...</p>
-        ) : (
-          <ContainerRequests $title="Pedidos recebidos">
-            {pendingResponse.map((response) => (
-              <Card key={response.id}>
-                <CardHeader>
-                  <CardTitle>{response.nameUserRequest}</CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <ButtonContainer>
-                    <ActionButton onClick={() => handleAccept(response)} color="#4CAF50">
-                      <FaCheck /> Aceitar
-                    </ActionButton>
-                    <ActionButton onClick={() => handleReject(response)} color="#F44336">
-                      <FaTimes /> Rejeitar
-                    </ActionButton>
-                  </ButtonContainer>
-                </CardBody>
-              </Card>
-            ))}
-          </ContainerRequests>
-        )}
+        <ContainerRequests $title="Pedidos recebidos">
+          {loading ?
+            <ContainerSpinner>
+              <Loader color={theme.colors.crimson} size={30} />
+            </ContainerSpinner>
+            :
+            <>
+              {pendingResponse.map((response) => (
+                <Card key={response.id}>
+                  <CardHeader>
+                    <CardTitle>{response.nameUserRequest}</CardTitle>
+                  </CardHeader>
+                  <CardBody>
+                    <ButtonContainer>
+                      <ActionButton onClick={() => handleAccept(response)} color="#4CAF50">
+                        <FaCheck /> Aceitar
+                      </ActionButton>
+                      <ActionButton onClick={() => handleReject(response)} color="#F44336">
+                        <FaTimes /> Rejeitar
+                      </ActionButton>
+                    </ButtonContainer>
+                  </CardBody>
+                </Card>
+              ))}
+            </>}
+        </ContainerRequests>
       </ContainerForm>
     </Container>
   );

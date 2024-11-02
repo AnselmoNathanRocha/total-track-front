@@ -8,12 +8,15 @@ import { AddItemInput } from "@/components/AddItemInput";
 import { theme } from "@/styles/theme";
 import { toastService } from "@/services/toast-service";
 import { userService } from "@/services/user";
-import { CircleStatus, ContainerItem, DateContainer, DateText, TextContainer, TextItem } from "./styles";
+import { CircleStatus, ContainerItem, DateContainer, DateText, TextContainer, TextItem, StatusIcon } from "./styles";
 import { Title } from "@/styles/globalStyle";
 import { pendingRequestService } from "@/services/pendingRequest";
 import { GetRequest, PostRequest } from "@/models/pendingRequest";
 import { useForceRefresh } from "@/hooks/use-force-refresh";
 import { formatDate } from "@/utils";
+import { requestHistoriesService } from "@/services/requestHistories";
+import { ContainerSpinner } from "@/components/Loader/styles";
+import { Loader } from "@/components/Loader";
 
 const isEmail = (value: string) => /[a-zA-Z]/.test(value);
 const phoneRegex = /^[0-9]{10,11}$/;
@@ -39,7 +42,7 @@ export function SendRequest() {
   const forceRefresh = useForceRefresh();
   const [loading, setLoading] = useState(false);
   const [pendingRequest, setPendingRequest] = useState<GetRequest[]>();
-  // const [requestHistories, setRequestHistories] = useState<GetRequest[]>();
+  const [requestHistories, setRequestHistories] = useState<GetRequest[]>([]);
   const form = useForm<SendRequestData>({
     resolver: zodResolver(sendRequestSchema),
   });
@@ -48,10 +51,10 @@ export function SendRequest() {
     const fetch = async () => {
       try {
         const responseRequests = await pendingRequestService.get();
-        // const responseHistories = await requestHistoriesService.get();
+        const responseHistories = await requestHistoriesService.get();
 
         setPendingRequest(responseRequests);
-        // setRequestHistories(responseHistories);
+        setRequestHistories(responseHistories);
       } catch (error) {
         console.error(error);
       }
@@ -68,7 +71,7 @@ export function SendRequest() {
 
       const dataRequest: PostRequest = {
         idUserResponse: responseUser.id,
-        nameUserResponse: responseUser.name
+        nameUserResponse: responseUser.name,
       };
 
       await pendingRequestService.create(dataRequest);
@@ -78,11 +81,7 @@ export function SendRequest() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
-      if (error.response.status === 400) {
-        toastService.error(error.response.data);
-      } else {
-        toastService.error(error.response.data.error);
-      }
+      toastService.error(error.response?.data?.error || "Erro ao enviar pedido.");
     } finally {
       setLoading(false);
     }
@@ -118,20 +117,30 @@ export function SendRequest() {
           ))}
         </ContainerRequests>
 
-        {/* <ContainerRequests $title="Histórico de pedidos">
-          {requestHistories && requestHistories.map((history) => (
-            <ContainerItem key={history.id}>
-              <CircleStatus />
-              <TextContainer>
-                <TextItem>{history.name}</TextItem>
-                <TextItem $size="12px">{history.email}</TextItem>
-              </TextContainer>
-              <DateContainer>
-                <DateText>{formatDate(history.createdAt)}</DateText>
-              </DateContainer>
-            </ContainerItem>
-          ))}
-        </ContainerRequests> */}
+        <ContainerRequests $title="Histórico de pedidos">
+          {loading ? (
+            <ContainerSpinner>
+              <Loader color={theme.colors.crimson} size={30} />
+            </ContainerSpinner>
+          ) : (
+            <>
+              {requestHistories && requestHistories.map((history) => (
+                <ContainerItem key={history.id}>
+                  <StatusIcon status={history.status} />
+                  <TextContainer>
+                    <TextItem>{history.nameUserResponse}</TextItem>
+                    <TextItem $size="12px" color={theme.colors.mediumSlate}>
+                      {history.status === "ACCEPTED" ? "Aceito" : "Rejeitado"}
+                    </TextItem>
+                  </TextContainer>
+                  <DateContainer>
+                    <DateText>{formatDate(history.createdAt)}</DateText>
+                  </DateContainer>
+                </ContainerItem>
+              ))}
+            </>
+          )}
+        </ContainerRequests>
       </ContainerForm>
     </Container>
   );
