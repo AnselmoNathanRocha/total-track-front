@@ -6,7 +6,6 @@ import { GetRequest } from "@/models/pendingRequest";
 import { Card, ButtonContainer, CardHeader, CardBody, ActionButton, CardTitle } from "./styles";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { toastService } from "@/services/toast-service";
-import { sharedWithService } from "@/services/sharedWithService";
 import { Loader } from "@/components/Loader";
 import { theme } from "@/styles/theme";
 import { ContainerSpinner } from "@/components/Loader/styles";
@@ -35,12 +34,7 @@ export function ReceivedRequests() {
 
   const handleAccept = async (response: GetRequest) => {
     try {
-      const data = {
-        idUserResponse: response.idUserRequest,
-        nameUserResponse: response.nameUserRequest
-      }
       await pendingResponseService.update(response.id, 'APPROVED');
-      await sharedWithService.create(data);
 
       toastService.success("Pedido aceito com sucesso!");
       forceRefresh();

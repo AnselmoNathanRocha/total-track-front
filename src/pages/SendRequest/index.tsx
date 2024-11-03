@@ -130,7 +130,7 @@ export function SendRequest() {
                   <TextContainer>
                     <TextItem>{history.nameUserResponse}</TextItem>
                     <TextItem $size="12px" color={theme.colors.mediumSlate}>
-                      {history.status === "ACCEPTED" ? "Aceito" : "Rejeitado"}
+                      {history.status === "APPROVED" ? "Aprovado" : "Rejeitado"}
                     </TextItem>
                   </TextContainer>
                   <DateContainer>
