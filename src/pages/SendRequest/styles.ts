@@ -58,5 +58,6 @@ export const DateContainer = styled.div`
 
 export const DateText = styled.span`
   font-size: 12px;
-  color: inherit;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.mediumSlate};
 `;
