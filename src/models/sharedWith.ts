@@ -5,6 +5,7 @@ export interface GetSharedWith {
   nameUserRequest: string;
   nameUserResponse: string;
   createdAt: string;
+  name: string;
 }
 
 export interface PostSharedWith {
