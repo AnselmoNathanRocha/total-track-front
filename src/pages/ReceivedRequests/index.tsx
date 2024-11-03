@@ -38,6 +38,7 @@ export function ReceivedRequests() {
   const [loading, setLoading] = useState<boolean>(true);
   const [showOptions, setShowOptions] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [idUser, serIdUser] = useState<number>();
 
   useEffect(() => {
     const fetch = async () => {
@@ -57,6 +58,34 @@ export function ReceivedRequests() {
 
     fetch();
   }, [forceRefresh]);
+
+  useEffect(() => {
+    const extractId = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+          throw new Error("Token não encontrado");
+        }
+
+        const tokenParts = token.split('.');
+
+        if (tokenParts.length !== 3) {
+          throw new Error("Formato de token inválido");
+        }
+
+        const payload = JSON.parse(atob(tokenParts[1]));
+
+        serIdUser(payload.sub);
+        return payload.sub;
+      } catch (error) {
+        console.error("Erro ao extrair o ID do token:", error);
+        return null;
+      }
+    };
+
+    extractId();
+  }, []);
 
   const handleAccept = async (response: GetRequest) => {
     try {
@@ -89,9 +118,8 @@ export function ReceivedRequests() {
 
   const handleRemoveFriend = async (friendId: number) => {
     try {
-      // await sharedWithService.remove(friendId);
       console.log("Removendo o amigo de ID: ", friendId);
-      toastService.success("Amigo removido com sucesso!");
+      toastService.success(`Amigo de ID ${friendId} removido!`);
       forceRefresh();
       setShowOptions(null);
     } catch (error) {
@@ -167,7 +195,7 @@ export function ReceivedRequests() {
                 <Card key={friend.id}>
                   <CardContent>
                     <CardHeader>
-                      <CardTitle>{friend.nameUserRequest}</CardTitle>
+                      <CardTitle>{idUser === friend.idUserRequest ? friend.nameUserResponse : friend.nameUserRequest}</CardTitle>
 
                       <EllipsisIconButton
                         onClick={() =>
@@ -186,7 +214,7 @@ export function ReceivedRequests() {
                         onMouseLeave={() => setShowOptions(null)}
                       >
                         <RemoveFriendButton
-                          onClick={() => handleRemoveFriend(friend.id)}
+                          onClick={() => handleRemoveFriend(idUser === friend.idUserRequest ? friend.idUserResponse : friend.idUserRequest)}
                         >
                           Remover
                         </RemoveFriendButton>
