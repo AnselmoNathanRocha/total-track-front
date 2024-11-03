@@ -104,17 +104,25 @@ export function SendRequest() {
         </FormRoot>
 
         <ContainerRequests $title="Pedidos pendentes">
-          {pendingRequest && pendingRequest.map((request) => (
-            <ContainerItem key={request.id}>
-              <CircleStatus />
-              <TextContainer>
-                <TextItem>{request.nameUserResponse}</TextItem>
-              </TextContainer>
-              <DateContainer>
-                <DateText>{formatDate(request.createdAt)}</DateText>
-              </DateContainer>
-            </ContainerItem>
-          ))}
+          {loading ? (
+            <ContainerSpinner>
+              <Loader color={theme.colors.crimson} size={30} />
+            </ContainerSpinner>
+          ) : (
+            <>
+              {pendingRequest && pendingRequest.map((request) => (
+                <ContainerItem key={request.id}>
+                  <CircleStatus />
+                  <TextContainer>
+                    <TextItem>{request.nameUserResponse}</TextItem>
+                  </TextContainer>
+                  <DateContainer>
+                    <DateText>{formatDate(request.createdAt)}</DateText>
+                  </DateContainer>
+                </ContainerItem>
+              ))}
+            </>
+          )}
         </ContainerRequests>
 
         <ContainerRequests $title="Histórico de pedidos">

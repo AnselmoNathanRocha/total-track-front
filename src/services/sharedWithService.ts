@@ -1,14 +1,9 @@
-import { GetSharedWith, PostSharedWith } from "@/models/sharedWith";
+import { GetSharedWith } from "@/models/sharedWith";
 import { httpClient } from "./http-client";
 
 class SharedWithService {
-  async get(id: number): Promise<GetSharedWith> {
-    const response = await httpClient.get(`/shared-with/${id}`);
-    return response.data;
-  }
-
-  async create(data: PostSharedWith): Promise<GetSharedWith> {
-    const response = await httpClient.post(`/shared-with`, data);
+  async get(): Promise<GetSharedWith[]> {
+    const response = await httpClient.get(`/shared-with`);
     return response.data;
   }
 }

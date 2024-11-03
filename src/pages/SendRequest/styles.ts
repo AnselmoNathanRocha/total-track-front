@@ -33,7 +33,7 @@ export const StatusIcon = styled.div<{ status: string }>`
   height: 10px;
   border-radius: 50%;
   background-color: ${({ status }) =>
-    status === "ACCEPTED" ? "#4CAF50" : "#F44336"};
+    status === "APPROVED" ? "#4CAF50" : "#F44336"};
 `;
 
 export const TextContainer = styled.div`

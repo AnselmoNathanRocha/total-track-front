@@ -9,10 +9,13 @@ import { toastService } from "@/services/toast-service";
 import { Loader } from "@/components/Loader";
 import { theme } from "@/styles/theme";
 import { ContainerSpinner } from "@/components/Loader/styles";
+import { sharedWithService } from "@/services/sharedWithService";
+import { GetSharedWith } from "@/models/sharedWith";
 
 export function ReceivedRequests() {
   const forceRefresh = useForceRefresh();
   const [pendingResponse, setPendingResponse] = useState<GetRequest[]>([]);
+  const [friends, setFriends] = useState<GetSharedWith[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -20,8 +23,10 @@ export function ReceivedRequests() {
       setLoading(true);
       try {
         const responseRequests = await pendingResponseService.get();
+        const responseFriends = await sharedWithService.get();
 
         setPendingResponse(responseRequests);
+        setFriends(responseFriends);
       } catch (error) {
         console.error(error);
       } finally {
@@ -73,7 +78,7 @@ export function ReceivedRequests() {
             </ContainerSpinner>
             :
             <>
-              {pendingResponse.map((response) => (
+              {pendingResponse && pendingResponse.map((response) => (
                 <Card key={response.id}>
                   <CardHeader>
                     <CardTitle>{response.nameUserRequest}</CardTitle>
@@ -88,6 +93,23 @@ export function ReceivedRequests() {
                       </ActionButton>
                     </ButtonContainer>
                   </CardBody>
+                </Card>
+              ))}
+            </>}
+        </ContainerRequests>
+
+        <ContainerRequests $title="Amigos">
+          {loading ?
+            <ContainerSpinner>
+              <Loader color={theme.colors.crimson} size={30} />
+            </ContainerSpinner>
+            :
+            <>
+              {friends && friends.map((friend) => (
+                <Card key={friend.id}>
+                  <CardHeader>
+                    <CardTitle>{friend.name}</CardTitle>
+                  </CardHeader>
                 </Card>
               ))}
             </>}
