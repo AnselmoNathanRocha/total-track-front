@@ -1,4 +1,3 @@
-// ReceivedRequests.tsx
 import { useEffect, useState, useRef } from "react";
 import {
   Container,
@@ -38,7 +37,7 @@ export function ReceivedRequests() {
   const [loading, setLoading] = useState<boolean>(true);
   const [showOptions, setShowOptions] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [idUser, serIdUser] = useState<number>();
+  const [idUser, setIdUser] = useState<number | undefined>();
 
   useEffect(() => {
     const fetch = async () => {
@@ -75,12 +74,9 @@ export function ReceivedRequests() {
         }
 
         const payload = JSON.parse(atob(tokenParts[1]));
-
-        serIdUser(payload.sub);
-        return payload.sub;
+        setIdUser(payload.sub); // Corrigido de serIdUser para setIdUser
       } catch (error) {
         console.error("Erro ao extrair o ID do token:", error);
-        return null;
       }
     };
 
@@ -90,10 +86,9 @@ export function ReceivedRequests() {
   const handleAccept = async (response: GetRequest) => {
     try {
       await pendingResponseService.update(response.id, "APPROVED");
-
       toastService.success("Pedido aceito com sucesso!");
       forceRefresh();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
       toastService.error(
@@ -107,7 +102,6 @@ export function ReceivedRequests() {
   const handleReject = async (response: GetRequest) => {
     try {
       await pendingResponseService.update(response.id, "REJECTED");
-
       toastService.success("Pedido rejeitado com sucesso!");
       forceRefresh();
     } catch (error) {
@@ -119,6 +113,7 @@ export function ReceivedRequests() {
   const handleRemoveFriend = async (friendId: number) => {
     try {
       console.log("Removendo o amigo de ID: ", friendId);
+      // Chame a função para remover o amigo aqui
       toastService.success(`Amigo de ID ${friendId} removido!`);
       forceRefresh();
       setShowOptions(null);
