@@ -92,14 +92,17 @@ export function Home() {
           const message = JSON.parse(event.data);
           if (message.type === "ITEM") {
             // Novo item adicionado
+            console.log("Novo item recebido.");
             setItems((prevItems) => {
               return [...prevItems, message.payload];
             });
           } else if (message.type === "ITEM_DELETED") {
             // Item deletado
+            console.log("Item deletado.");
             setItems((prevItems) => prevItems.filter((item) => item.id !== Number(message.payload.itemId)));
           } else if (message.type === "ITEM_UPDATED") {
             // Item atualizado (alteração do 'checked')
+            console.log("Item atualizado.");
             setItems((prevItems) => {
               return prevItems.map((item) =>
                 item.id === Number(message.payload.itemId)
