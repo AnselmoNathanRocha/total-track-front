@@ -44,13 +44,10 @@ export function Home() {
         setLoading((prev) => ({ ...prev, page: true }));
 
         const userResponse = await userService.getMe();
-        const itemsResponse = await itemService.get();
 
         setUser(userResponse);
-        setItems(itemsResponse);
       } catch (error) {
         console.error(error);
-        toastService.error("Erro ao buscar lista");
       } finally {
         setLoading((prev) => ({ ...prev, page: false }));
       }
@@ -60,11 +57,34 @@ export function Home() {
   }, [forceRefresh]);
 
   useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setLoading((prev) => ({ ...prev, page: true }));
+
+        const itemsResponse = await itemService.get();
+
+        setItems(itemsResponse);
+      } catch (error) {
+        console.error(error);
+        toastService.error("Erro ao buscar lista");
+      } finally {
+        setLoading((prev) => ({ ...prev, page: false }));
+      }
+    };
+
     if (user) {
-      const ws = new WebSocket(`wss://total-track-52852a7cf2b1.herokuapp.com`, [String(user.id)]);
+      fetchItems();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      const API_SOCKET_BASE_URL = import.meta.env.VITE_API_SOCKET_BASE_URL || "wss://total-track-52852a7cf2b1.herokuapp.com/";
+      const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(user.id)]);
 
       ws.onopen = () => {
         console.log("WebSocket conectado");
+        toastService.info("WebSocket conectado!.");
       };
 
       ws.onmessage = (event) => {
@@ -99,6 +119,7 @@ export function Home() {
 
       ws.onclose = () => {
         console.log("WebSocket desconectado");
+        toastService.warning("WebSocket desconectado.");
       };
 
       return () => {
