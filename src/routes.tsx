@@ -6,6 +6,7 @@ import { Signup } from "./pages/Signup";
 import { ReceivedRequests } from "./pages/ReceivedRequests";
 import { SendRequest } from "./pages/SendRequest";
 import { Account } from "./pages/Account";
+import { Teste } from "./pages/Teste";
 
 export const authRoutes = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ export const appRoutes = createBrowserRouter([
         element: <SendRequest />,
       },
     ],
+  },
+  {
+    path: "/test",
+    element: <Teste />,
   },
   {
     path: "*",

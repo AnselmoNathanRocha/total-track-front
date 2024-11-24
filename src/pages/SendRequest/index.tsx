@@ -17,6 +17,7 @@ import { formatDate } from "@/utils";
 import { requestHistoriesService } from "@/services/requestHistories";
 import { ContainerSpinner } from "@/components/Loader/styles";
 import { Loader } from "@/components/Loader";
+// import { io } from "socket.io-client";
 
 const isEmail = (value: string) => /[a-zA-Z]/.test(value);
 const phoneRegex = /^[0-9]{10,11}$/;
@@ -46,6 +47,7 @@ export function SendRequest() {
   const form = useForm<SendRequestData>({
     resolver: zodResolver(sendRequestSchema),
   });
+  // const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -62,6 +64,21 @@ export function SendRequest() {
 
     fetch();
   }, [forceRefresh]);
+
+  // useEffect(() => {
+  //   const newSocket = io("http://localhost:3001", {
+  //     withCredentials: true,
+  //   });
+
+  //   newSocket.emit("register", 1);
+  //   setSocket(newSocket);
+
+  //   newSocket.on("newSentRequest", (data) => {
+  //     setPendingRequest((prev) => [...prev, data]);
+  //   });
+
+  //   return () => newSocket.disconnect();
+  // }, []);
 
   const handleSubmit = async (data: SendRequestData) => {
     try {

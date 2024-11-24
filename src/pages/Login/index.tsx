@@ -55,6 +55,7 @@ export function Login() {
       });
 
       const response = await userService.authentication(data);
+      console.log(response);
 
       if (response) {
         login(response);
@@ -62,20 +63,21 @@ export function Login() {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      if (error.response && error.response.status === 404) {
-        setError({
-          emailError: error.response.data,
-          passwordError: undefined,
-        });
-      } else if (error.response && error.response.status === 401) {
-        setError({
-          emailError: undefined,
-          passwordError: error.response.data,
-        });
-      } else {
-        console.error(error);
-        toastService.error("Erro ao se comunicar com o servidor.");
-      }
+      // if (error.response && error.response.status === 404) {
+      //   setError({
+      //     emailError: error.response.data,
+      //     passwordError: undefined,
+      //   });
+      // } else if (error.response && error.response.status === 401) {
+      //   setError({
+      //     emailError: undefined,
+      //     passwordError: error.response.data,
+      //   });
+      // } else {
+      //   console.error(error);
+      //   toastService.error("Erro ao se comunicar com o servidor.");
+      // }
+      console.error(error);
     } finally {
       setLoading(false);
     }

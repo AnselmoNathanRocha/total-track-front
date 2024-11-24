@@ -1,19 +1,19 @@
-import { AddItemInput } from "../../components/AddItemInput";
-import { Container } from "../../styles/globalStyle";
+import { AddItemInput } from "@/components/AddItemInput";
+import { Container } from "@/styles/globalStyle";
 import { ContainerAreaProfile, ContainerInput, Img, Title } from "./styles";
-import img from "../../assets/list.png";
+import img from "@/assets/list.png";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { FormRoot } from "../../components/Forms/FormRoot";
+import { FormRoot } from "@/components/Forms/FormRoot";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { useForceRefresh } from "../../hooks/use-force-refresh";
-import { List } from "../../components/List";
-import { AreaProfile } from "../../components/AreaProfile";
+import { useForceRefresh } from "@/hooks/use-force-refresh";
+import { List } from "@/components/List";
+import { AreaProfile } from "@/components/AreaProfile";
 import { useNavigate } from "react-router-dom";
-import { itemService } from "../../services/item";
-import { toastService } from "../../services/toast-service";
-import { GetUser } from "../../models/user";
+import { itemService } from "@/services/item";
+import { toastService } from "@/services/toast-service";
+import { GetUser } from "@/models/user";
 import { getImageUrl } from "@/utils";
 import { userService } from "@/services/user";
 import { GetItem } from "@/models/item";
@@ -36,7 +36,7 @@ export function Home() {
     button: false,
   });
   const [user, setUser] = useState<GetUser>();
-  const [items, setItems] = useState<GetItem[]>();
+  const [items, setItems] = useState<GetItem[]>([]);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -58,6 +58,54 @@ export function Home() {
 
     fetchItems();
   }, [forceRefresh]);
+
+  useEffect(() => {
+    if (user) {
+      const ws = new WebSocket("ws://localhost:3000", [String(user.id)]);
+
+      ws.onopen = () => {
+        console.log("WebSocket conectado");
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === "ITEM") {
+            // Novo item adicionado
+            setItems((prevItems) => {
+              return [...prevItems, message.payload];
+            });
+          } else if (message.type === "ITEM_DELETED") {
+            // Item deletado
+            setItems((prevItems) => prevItems.filter((item) => item.id !== Number(message.payload.itemId)));
+          } else if (message.type === "ITEM_UPDATED") {
+            // Item atualizado (alteração do 'checked')
+            setItems((prevItems) => {
+              return prevItems.map((item) =>
+                item.id === Number(message.payload.itemId)
+                  ? { ...item, checked: message.payload.checked }
+                  : item
+              );
+            });
+          }
+        } catch (error) {
+          console.error("Erro ao processar mensagem do WebSocket:", error);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error("Erro no WebSocket:", error);
+      };
+
+      ws.onclose = () => {
+        console.log("WebSocket desconectado");
+      };
+
+      return () => {
+        ws.close();
+      };
+    }
+  }, [user]);
 
   const handleAdd = async (data: ItemData) => {
     try {
