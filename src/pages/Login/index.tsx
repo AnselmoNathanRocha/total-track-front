@@ -77,6 +77,7 @@ export function Login() {
       //   console.error(error);
       //   toastService.error("Erro ao se comunicar com o servidor.");
       // }
+      toastService.error("Erro ao se comunicar com o servidor.");
       console.error(error);
     } finally {
       setLoading(false);
