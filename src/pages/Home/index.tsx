@@ -61,7 +61,7 @@ export function Home() {
 
   useEffect(() => {
     if (user) {
-      const ws = new WebSocket("ws://total-track-52852a7cf2b1.herokuapp.com/", [String(user.id)]);
+      const ws = new WebSocket(`wss://total-track-52852a7cf2b1.herokuapp.com`, [String(user.id)]);
 
       ws.onopen = () => {
         console.log("WebSocket conectado");
