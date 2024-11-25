@@ -81,6 +81,7 @@ export function Home() {
     if (user) {
       const API_SOCKET_BASE_URL = import.meta.env.VITE_API_SOCKET_BASE_URL || "wss://total-track-52852a7cf2b1.herokuapp.com/";
       const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(user.id)]);
+      // const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String("TESTEEEEEEEEE")]);
 
       ws.onopen = () => {
         console.log("WebSocket conectado");
@@ -123,6 +124,7 @@ export function Home() {
       ws.onclose = () => {
         console.log("WebSocket desconectado");
         toastService.warning("WebSocket desconectado.");
+        forceRefresh();
       };
 
       return () => {
