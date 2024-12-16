@@ -8,7 +8,7 @@ class PendingRequestService {
   }
 
   async create(data: PostRequest) {
-    await httpClient.post(`/pending-requests`, data);
+    await httpClient.post(`/send-request`, data);
   }
 }
 

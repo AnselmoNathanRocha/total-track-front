@@ -7,17 +7,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AddItemInput } from "@/components/AddItemInput";
 import { theme } from "@/styles/theme";
 import { toastService } from "@/services/toast-service";
-import { userService } from "@/services/user";
 import { CircleStatus, ContainerItem, DateContainer, DateText, TextContainer, TextItem, StatusIcon } from "./styles";
 import { Title } from "@/styles/globalStyle";
 import { pendingRequestService } from "@/services/pendingRequest";
-import { GetRequest, PostRequest } from "@/models/pendingRequest";
+import { GetRequest } from "@/models/pendingRequest";
 import { useForceRefresh } from "@/hooks/use-force-refresh";
 import { formatDate } from "@/utils";
 import { requestHistoriesService } from "@/services/requestHistories";
 import { ContainerSpinner } from "@/components/Loader/styles";
 import { Loader } from "@/components/Loader";
-// import { io } from "socket.io-client";
 
 const isEmail = (value: string) => /[a-zA-Z]/.test(value);
 const phoneRegex = /^[0-9]{10,11}$/;
@@ -47,7 +45,6 @@ export function SendRequest() {
   const form = useForm<SendRequestData>({
     resolver: zodResolver(sendRequestSchema),
   });
-  // const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -65,40 +62,18 @@ export function SendRequest() {
     fetch();
   }, [forceRefresh]);
 
-  // useEffect(() => {
-  //   const newSocket = io("http://localhost:3001", {
-  //     withCredentials: true,
-  //   });
-
-  //   newSocket.emit("register", 1);
-  //   setSocket(newSocket);
-
-  //   newSocket.on("newSentRequest", (data) => {
-  //     setPendingRequest((prev) => [...prev, data]);
-  //   });
-
-  //   return () => newSocket.disconnect();
-  // }, []);
-
   const handleSubmit = async (data: SendRequestData) => {
     try {
       setLoading(true);
 
-      const responseUser = await userService.getByEmail(data.user);
-
-      const dataRequest: PostRequest = {
-        idUserResponse: responseUser.id,
-        nameUserResponse: responseUser.name,
-      };
-
-      await pendingRequestService.create(dataRequest);
+      await pendingRequestService.create({ email: data.user});
       toastService.success("Pedido feito com sucesso!");
       form.reset();
       forceRefresh();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
-      toastService.error(error.response?.data?.error || "Erro ao enviar pedido.");
+      toastService.error(error.response?.data?.message || "Erro ao enviar pedido.");
     } finally {
       setLoading(false);
     }

@@ -9,8 +9,7 @@ export interface GetRequest {
 }
 
 export interface PostRequest {
-  idUserResponse: number;
-  nameUserResponse: string;
+  email: string;
 }
 
 export interface Params {
